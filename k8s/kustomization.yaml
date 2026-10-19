@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - postgres.yaml
+  - backend.yaml
+  - frontend.yaml
+  - hpa.yaml
+  - ingress.yaml
+images:
+  - name: talha884/eks-backend
+    newTag: latest
+  - name: talha884/eks-frontend
+    newTag: latest

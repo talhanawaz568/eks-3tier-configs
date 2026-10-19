@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  selector:
+    matchLabels: {app: backend}
+  template:
+    metadata:
+      labels: {app: backend}
+    spec:
+      containers:
+        - name: backend
+          image: talha884/eks-backend
+          ports:
+            - containerPort: 5000
+          env:
+            - {name: DB_HOST, value: postgres}
+            - {name: DB_NAME, value: appdb}
+            - name: DB_USER
+              valueFrom: {secretKeyRef: {name: db-credentials, key: username}}
+            - name: DB_PASSWORD
+              valueFrom: {secretKeyRef: {name: db-credentials, key: password}}
+          readinessProbe:
+            httpGet: {path: /api/health, port: 5000}
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet: {path: /api/health, port: 5000}
+            initialDelaySeconds: 15
+          resources:
+            requests: {cpu: 500m, memory: 128Mi}
+            limits: {cpu: "1", memory: 256Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /api/health
+spec:
+  selector: {app: backend}
+  ports:
+    - port: 80
+      targetPort: 5000
