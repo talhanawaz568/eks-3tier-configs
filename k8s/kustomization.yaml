@@ -8,6 +8,6 @@ resources:
   - ingress.yaml
 images:
   - name: talha884/eks-backend
-    newTag: latest
+    newTag: 5541c13
   - name: talha884/eks-frontend
-    newTag: latest
+    newTag: 5541c13
